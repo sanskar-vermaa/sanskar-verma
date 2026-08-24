@@ -47,6 +47,35 @@ def test_multiply_by_decimal_factor():
     assert result.amount_minor == 5000
 
 
+def test_multiply_by_int_factor():
+    a = Money.from_major("10.00", "USD")
+    result = a * 3
+    assert result.amount_minor == 3000
+
+
 def test_is_negative():
     assert Money.from_major("-5.00", "USD").is_negative()
     assert not Money.from_major("5.00", "USD").is_negative()
+
+
+def test_subtraction():
+    a = Money.from_major("10.00", "USD")
+    b = Money.from_major("4.50", "USD")
+    assert (a - b).amount_minor == 550
+
+
+def test_negation():
+    a = Money.from_major("10.00", "USD")
+    assert (-a).amount_minor == -1000
+
+
+def test_currency_is_normalized_to_uppercase():
+    a = Money.from_major("10.00", "usd")
+    assert a.currency == "USD"
+
+
+def test_ordering():
+    small = Money.from_major("5.00", "USD")
+    large = Money.from_major("10.00", "USD")
+    assert small < large
+    assert sorted([large, small]) == [small, large]
