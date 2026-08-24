@@ -60,6 +60,23 @@ def test_budget_status_workflow(tmp_path):
     assert "Remaining:       50.00 USD" in out
 
 
+def test_balance_command_reflects_opening_balance_and_transactions(tmp_path):
+    db_path = str(tmp_path / "test.db")
+    csv_path = tmp_path / "statement.csv"
+    csv_path.write_text(
+        "Date,Description,Amount,Id\n"
+        "2024-03-01,PAYCHECK,1000.00,t1\n"
+        "2024-03-05,RENT,-500.00,t2\n"
+    )
+
+    _run(["--db", db_path, "init-account", "acc1", "Checking", "USD", "--opening-balance", "200.00"])
+    _run(["--db", db_path, "import", "acc1", str(csv_path)])
+
+    code, out = _run(["--db", db_path, "balance", "acc1"])
+    assert code == 0
+    assert "700.00 USD" in out  # 200 + 1000 - 500
+
+
 def test_tag_command(tmp_path):
     db_path = str(tmp_path / "test.db")
     csv_path = tmp_path / "statement.csv"
