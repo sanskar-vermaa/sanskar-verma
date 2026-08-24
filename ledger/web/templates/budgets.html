@@ -2,29 +2,44 @@
 {% block title %}Budgets - Ledger{% endblock %}
 {% block content %}
   <h1>Budgets</h1>
-  <table>
-    <thead><tr><th>Category</th><th>Period</th><th>Limit</th><th>Spent</th><th>Remaining</th><th>Alert</th></tr></thead>
-    <tbody>
-      {% for status, alert in statuses %}
-      <tr class="{{ 'over' if status.is_over else '' }}">
-        <td>{{ status.budget.category }}</td>
-        <td>{{ status.budget.period }}</td>
-        <td>{{ status.effective_limit }}</td>
-        <td>{{ status.spent }}</td>
-        <td>{{ status.remaining }}</td>
-        <td>{{ alert or "-" }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <p>Envelope-style budgets with rollover and alert thresholds.</p>
+
+  {% if not statuses %}
+    <div class="empty-state">No budgets yet &mdash; create one below.</div>
+  {% else %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Category</th><th>Period</th><th>Limit</th><th>Spent</th><th>Remaining</th><th>Alert</th></tr></thead>
+      <tbody>
+        {% for status, alert in statuses %}
+        <tr class="{{ 'over' if status.is_over else '' }}">
+          <td><strong>{{ status.budget.category }}</strong></td>
+          <td>{{ status.budget.period }}</td>
+          <td class="amount">{{ status.effective_limit }}</td>
+          <td class="amount">{{ status.spent }}</td>
+          <td class="amount {{ 'negative' if status.is_over else 'positive' }}">{{ status.remaining }}</td>
+          <td>
+            {% if alert == "over_budget" %}<span class="badge negative">over budget</span>
+            {% elif alert == "warning" %}<span class="badge warning">warning</span>
+            {% elif alert == "on_track" %}<span class="badge positive">on track</span>
+            {% else %}<span class="badge muted">&mdash;</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
 
   <h2>New budget</h2>
-  <form method="post" action="{{ url_for('new_budget') }}">
-    <input name="category" placeholder="Category" required>
-    <input name="period" placeholder="YYYY-MM" required>
-    <input name="limit" placeholder="Limit (e.g. 200.00)" required>
-    <input name="currency" placeholder="Currency (e.g. USD)" required>
-    <label><input type="checkbox" name="rollover" value="1"> Rollover</label>
-    <button type="submit">Create</button>
-  </form>
+  <div class="section-card">
+    <form method="post" action="{{ url_for('new_budget') }}" class="inline-form">
+      <input name="category" placeholder="Category" required>
+      <input name="period" placeholder="YYYY-MM" required>
+      <input name="limit" placeholder="Limit e.g. 200.00" required>
+      <input name="currency" placeholder="USD" required style="width: 80px">
+      <label><input type="checkbox" name="rollover" value="1"> Rollover</label>
+      <button type="submit">Create budget</button>
+    </form>
+  </div>
 {% endblock %}
