@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Rules - Ledger{% endblock %}
+{% block content %}
+  <h1>Categorization Rules</h1>
+  <table>
+    <thead><tr><th>Priority</th><th>Pattern</th><th>Category</th></tr></thead>
+    <tbody>
+      {% for rule in rules %}
+      <tr>
+        <td>{{ rule.priority }}</td>
+        <td>{{ rule.pattern }}</td>
+        <td>{{ rule.category }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>New rule</h2>
+  <form method="post" action="{{ url_for('new_rule') }}">
+    <input name="pattern" placeholder="Pattern (e.g. STARBUCKS*)" required>
+    <input name="category" placeholder="Category" required>
+    <input name="priority" type="number" placeholder="Priority" value="100" required>
+    <button type="submit">Add rule</button>
+  </form>
+{% endblock %}
