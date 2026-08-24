@@ -2,24 +2,34 @@
 {% block title %}Rules - Ledger{% endblock %}
 {% block content %}
   <h1>Categorization Rules</h1>
-  <table>
-    <thead><tr><th>Priority</th><th>Pattern</th><th>Category</th></tr></thead>
-    <tbody>
-      {% for rule in rules %}
-      <tr>
-        <td>{{ rule.priority }}</td>
-        <td>{{ rule.pattern }}</td>
-        <td>{{ rule.category }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <p>Glob patterns matched against transaction descriptions, lowest priority number wins.</p>
+
+  {% if not rules %}
+    <div class="empty-state">No rules yet &mdash; add one below.</div>
+  {% else %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Priority</th><th>Pattern</th><th>Category</th></tr></thead>
+      <tbody>
+        {% for rule in rules %}
+        <tr>
+          <td>{{ rule.priority }}</td>
+          <td><code>{{ rule.pattern }}</code></td>
+          <td><span class="badge">{{ rule.category }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
 
   <h2>New rule</h2>
-  <form method="post" action="{{ url_for('new_rule') }}">
-    <input name="pattern" placeholder="Pattern (e.g. STARBUCKS*)" required>
-    <input name="category" placeholder="Category" required>
-    <input name="priority" type="number" placeholder="Priority" value="100" required>
-    <button type="submit">Add rule</button>
-  </form>
+  <div class="section-card">
+    <form method="post" action="{{ url_for('new_rule') }}" class="inline-form">
+      <input name="pattern" placeholder="Pattern e.g. STARBUCKS*" required>
+      <input name="category" placeholder="Category" required>
+      <input name="priority" type="number" placeholder="Priority" value="100" required style="width: 90px">
+      <button type="submit">Add rule</button>
+    </form>
+  </div>
 {% endblock %}
