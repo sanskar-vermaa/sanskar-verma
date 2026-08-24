@@ -88,6 +88,21 @@ class TransactionRepository:
         )
         self._conn.commit()
 
+    def add_tag(self, transaction_id: int, tag: str) -> None:
+        row = self._conn.execute(
+            "SELECT tags FROM transactions WHERE transaction_id = ?", (transaction_id,)
+        ).fetchone()
+        if row is None:
+            raise ValueError(f"no transaction with id {transaction_id}")
+        tags = [t for t in row["tags"].split(",") if t]
+        if tag not in tags:
+            tags.append(tag)
+        self._conn.execute(
+            "UPDATE transactions SET tags = ? WHERE transaction_id = ?",
+            (",".join(tags), transaction_id),
+        )
+        self._conn.commit()
+
     def list_transactions(
         self,
         account_id: str | None = None,
