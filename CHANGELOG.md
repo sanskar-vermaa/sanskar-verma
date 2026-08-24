@@ -16,6 +16,7 @@
 - Tagging support for transactions.
 - CLI covering account setup, import, categorization, budgeting, tagging, and export.
 - GitHub Actions CI running the test suite on Python 3.10-3.12.
+- Flask web dashboard (`ledger serve`) for accounts, transactions, budgets, and rules.
 
 ### Fixed
 - Recurring-detection description normalization now strips alphanumeric
