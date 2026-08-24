@@ -155,6 +155,18 @@ def _cmd_budget_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_tag(args: argparse.Namespace) -> int:
+    conn = connect(args.db)
+    repo = TransactionRepository(conn)
+    try:
+        repo.add_tag(args.transaction_id, args.tag)
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+    print(f"Tagged transaction {args.transaction_id} with {args.tag!r}.")
+    return 0
+
+
 def _cmd_export(args: argparse.Namespace) -> int:
     conn = connect(args.db)
     repo = TransactionRepository(conn)
@@ -217,6 +229,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_budget_status.add_argument("category")
     p_budget_status.add_argument("period", help="YYYY-MM")
     p_budget_status.set_defaults(func=_cmd_budget_status)
+
+    p_tag = subparsers.add_parser("tag", help="add a tag to a transaction")
+    p_tag.add_argument("transaction_id", type=int)
+    p_tag.add_argument("tag")
+    p_tag.set_defaults(func=_cmd_tag)
 
     p_export = subparsers.add_parser("export", help="export an account's transactions to CSV")
     p_export.add_argument("account_id")
