@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ account.account_id }} - Ledger{% endblock %}
+{% block content %}
+  <h1>{{ account.name }} ({{ account.account_id }})</h1>
+  <p>Current balance: <strong class="{{ 'negative' if balance.is_negative() else '' }}">{{ balance }}</strong></p>
+
+  <form method="get">
+    <label>Period: <input type="month" name="period" value="{{ period }}"></label>
+    <button type="submit">View</button>
+  </form>
+
+  {% if summary %}
+    <h2>Summary for {{ summary.period }}</h2>
+    <ul>
+      <li>Income: {{ summary.income }}</li>
+      <li>Expenses: {{ summary.expenses }}</li>
+      <li>Net: {{ summary.net }}</li>
+    </ul>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('categorize', account_id=account.account_id) }}">
+    <button type="submit">Apply categorization rules</button>
+  </form>
+
+  <h2>Transactions</h2>
+  <table>
+    <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Category</th><th>Tags</th></tr></thead>
+    <tbody>
+      {% for txn in transactions %}
+      <tr>
+        <td>{{ txn.posted_on }}</td>
+        <td>{{ txn.description }}</td>
+        <td class="{{ 'negative' if txn.amount.is_negative() else '' }}">{{ txn.amount }}</td>
+        <td>{{ txn.category or "" }}</td>
+        <td>{{ txn.tags | join(", ") }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
