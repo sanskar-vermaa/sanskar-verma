@@ -2,17 +2,38 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Ledger{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <nav>
-    <a href="{{ url_for('index') }}">Accounts</a>
-    <a href="{{ url_for('budgets') }}">Budgets</a>
-    <a href="{{ url_for('rules') }}">Rules</a>
-  </nav>
-  <main>
-    {% block content %}{% endblock %}
-  </main>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">L</span>
+        <span class="brand-name">Ledger</span>
+      </div>
+      <nav>
+        <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint in ('index', 'account_detail') else '' }}">
+          <span class="nav-icon">&#9679;</span> Accounts
+        </a>
+        <a href="{{ url_for('budgets') }}" class="{{ 'active' if request.endpoint in ('budgets',) else '' }}">
+          <span class="nav-icon">&#9673;</span> Budgets
+        </a>
+        <a href="{{ url_for('rules') }}" class="{{ 'active' if request.endpoint in ('rules',) else '' }}">
+          <span class="nav-icon">&#9670;</span> Rules
+        </a>
+      </nav>
+    </aside>
+    <div class="content-area">
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

@@ -2,20 +2,26 @@
 {% block title %}Accounts - Ledger{% endblock %}
 {% block content %}
   <h1>Accounts</h1>
+  <p>Every account you've imported, with its live balance.</p>
+
   {% if not accounts %}
-    <p>No accounts yet. Use <code>ledger init-account</code> from the CLI to create one.</p>
+    <div class="empty-state">
+      No accounts yet. Run <code>ledger init-account</code> from the CLI to create one.
+    </div>
   {% else %}
-    <table>
-      <thead><tr><th>Account</th><th>Name</th><th>Balance</th></tr></thead>
-      <tbody>
-        {% for account, balance in accounts %}
-        <tr>
-          <td><a href="{{ url_for('account_detail', account_id=account.account_id) }}">{{ account.account_id }}</a></td>
-          <td>{{ account.name }}</td>
-          <td class="{{ 'negative' if balance.is_negative() else '' }}">{{ balance }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Account</th><th>Name</th><th>Balance</th></tr></thead>
+        <tbody>
+          {% for account, balance in accounts %}
+          <tr>
+            <td><a href="{{ url_for('account_detail', account_id=account.account_id) }}"><strong>{{ account.account_id }}</strong></a></td>
+            <td>{{ account.name }}</td>
+            <td class="amount {{ 'negative' if balance.is_negative() else 'positive' }}">{{ balance }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   {% endif %}
 {% endblock %}
