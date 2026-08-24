@@ -60,6 +60,28 @@ def test_budget_status_workflow(tmp_path):
     assert "Remaining:       50.00 USD" in out
 
 
+def test_tag_command(tmp_path):
+    db_path = str(tmp_path / "test.db")
+    csv_path = tmp_path / "statement.csv"
+    csv_path.write_text("Date,Description,Amount,Id\n2024-03-05,COFFEE SHOP,-4.50,t1\n")
+
+    _run(["--db", db_path, "init-account", "acc1", "Checking", "USD"])
+    _run(["--db", db_path, "import", "acc1", str(csv_path)])
+
+    code, out = _run(["--db", db_path, "tag", "1", "personal"])
+    assert code == 0
+    assert "Tagged transaction 1" in out
+
+    code, out = _run(["--db", db_path, "export", "acc1"])
+    assert "personal" in out
+
+
+def test_tag_unknown_transaction_fails(tmp_path):
+    db_path = str(tmp_path / "test.db")
+    code, _ = _run(["--db", db_path, "tag", "9999", "personal"])
+    assert code == 1
+
+
 def test_import_fails_for_unknown_account(tmp_path):
     db_path = str(tmp_path / "test.db")
     csv_path = tmp_path / "statement.csv"
