@@ -10,6 +10,7 @@ from ledger.importers.csv_importer import ImportError_, parse_statement
 from ledger.models.budget import Budget, evaluate_budget
 from ledger.models.transaction import Account
 from ledger.models.money import Money
+from ledger.reports.balance import current_balance
 from ledger.reports.export import to_csv
 from ledger.reports.summary import summarize_month
 from ledger.rules.alerts import evaluate_alert
@@ -167,6 +168,20 @@ def _cmd_tag(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_balance(args: argparse.Namespace) -> int:
+    conn = connect(args.db)
+    repo = TransactionRepository(conn)
+    account = repo.get_account(args.account_id)
+    if account is None:
+        print(f"error: unknown account {args.account_id!r}", file=sys.stderr)
+        return 1
+
+    transactions = repo.list_transactions(account_id=args.account_id)
+    balance = current_balance(account, transactions)
+    print(f"{args.account_id}: {balance}")
+    return 0
+
+
 def _cmd_export(args: argparse.Namespace) -> int:
     conn = connect(args.db)
     repo = TransactionRepository(conn)
@@ -229,6 +244,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_budget_status.add_argument("category")
     p_budget_status.add_argument("period", help="YYYY-MM")
     p_budget_status.set_defaults(func=_cmd_budget_status)
+
+    p_balance = subparsers.add_parser("balance", help="show current account balance")
+    p_balance.add_argument("account_id")
+    p_balance.set_defaults(func=_cmd_balance)
 
     p_tag = subparsers.add_parser("tag", help="add a tag to a transaction")
     p_tag.add_argument("transaction_id", type=int)
