@@ -35,3 +35,20 @@ def test_export_handles_missing_category_and_tags():
     )
     output = to_csv([txn])
     assert "DEPOSIT,100.00,USD,," in output
+
+
+def test_export_round_trip_via_cli(tmp_path):
+    from ledger.cli.main import main
+
+    db_path = str(tmp_path / "t.db")
+    csv_in = tmp_path / "in.csv"
+    csv_in.write_text("Date,Description,Amount,Id\n2024-03-05,COFFEE SHOP,-12.50,t1\n")
+    out_path = tmp_path / "out.csv"
+
+    main(["--db", db_path, "init-account", "acc1", "Checking", "USD"])
+    main(["--db", db_path, "import", "acc1", str(csv_in)])
+    code = main(["--db", db_path, "export", "acc1", "--out", str(out_path)])
+
+    assert code == 0
+    content = out_path.read_text()
+    assert "COFFEE SHOP" in content
