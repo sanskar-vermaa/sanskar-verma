@@ -10,6 +10,7 @@ from ledger.importers.csv_importer import ImportError_, parse_statement
 from ledger.models.budget import Budget, evaluate_budget
 from ledger.models.transaction import Account
 from ledger.models.money import Money
+from ledger.reports.export import to_csv
 from ledger.reports.summary import summarize_month
 from ledger.rules.alerts import evaluate_alert
 from ledger.rules.engine import CategoryRule, RuleEngine
@@ -154,6 +155,24 @@ def _cmd_budget_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_export(args: argparse.Namespace) -> int:
+    conn = connect(args.db)
+    repo = TransactionRepository(conn)
+    account = repo.get_account(args.account_id)
+    if account is None:
+        print(f"error: unknown account {args.account_id!r}", file=sys.stderr)
+        return 1
+
+    transactions = repo.list_transactions(account_id=args.account_id)
+    csv_text = to_csv(transactions)
+    if args.out:
+        Path(args.out).write_text(csv_text, encoding="utf-8")
+        print(f"Exported {len(transactions)} transactions to {args.out}")
+    else:
+        print(csv_text, end="")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ledger")
     parser.add_argument("--db", default="ledger.db", help="path to the SQLite database file")
@@ -198,6 +217,11 @@ def build_parser() -> argparse.ArgumentParser:
     p_budget_status.add_argument("category")
     p_budget_status.add_argument("period", help="YYYY-MM")
     p_budget_status.set_defaults(func=_cmd_budget_status)
+
+    p_export = subparsers.add_parser("export", help="export an account's transactions to CSV")
+    p_export.add_argument("account_id")
+    p_export.add_argument("--out", help="output file path (defaults to stdout)")
+    p_export.set_defaults(func=_cmd_export)
 
     return parser
 
