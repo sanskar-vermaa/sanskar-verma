@@ -16,17 +16,24 @@ from dataclasses import dataclass
 from ledger.models.money import Money
 from ledger.models.transaction import Transaction
 
-_NORMALIZE_RE = re.compile(r"[^A-Z0-9 ]+")
-_TRAILING_DIGITS_RE = re.compile(r"\b\d{3,}\b")
+_TOKEN_RE = re.compile(r"[A-Z0-9]+")
 
 
 def _normalize_description(description: str) -> str:
-    """Strip punctuation and volatile tokens (store numbers, dates, ids)
-    so "AMAZON.COM*A1B2C3" and "AMAZON.COM*X9Y8Z7" group together."""
+    """Strip punctuation and volatile tokens (store numbers, dates,
+    transaction/reference ids) so "AMAZON.COM*A1B2C3D4" and
+    "AMAZON.COM*X9Y8Z7W6" group together.
+
+    Volatile tokens are usually alphanumeric (store/reference codes mix
+    letters and digits, e.g. "A1B2C3D4"), not purely numeric, so any
+    token of length >= 3 containing at least one digit is treated as
+    volatile and dropped. Pure-alpha tokens like "NETFLIX" or "COM" are
+    kept.
+    """
     upper = description.upper()
-    upper = _TRAILING_DIGITS_RE.sub("", upper)
-    upper = _NORMALIZE_RE.sub(" ", upper)
-    return " ".join(upper.split())
+    tokens = _TOKEN_RE.findall(upper)
+    kept = [t for t in tokens if not (len(t) >= 3 and any(c.isdigit() for c in t))]
+    return " ".join(kept)
 
 
 @dataclass(frozen=True)
