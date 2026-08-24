@@ -29,7 +29,10 @@ balance forward month to month.
 - **Exact currency math** — money is stored as integer minor units, never
   floats, with explicit, auditable currency conversion.
 - **A real CLI** — `init-account`, `import`, `add-rule`, `categorize`,
-  `set-budget`, `budget-status`, `report`.
+  `set-budget`, `budget-status`, `balance`, `tag`, `report`, `export`.
+- **A web dashboard** — a small Flask app (`ledger serve`) over the same
+  database: browse accounts and transactions, manage budgets and
+  categorization rules, and trigger categorization from the browser.
 
 ## Quick start
 
@@ -43,6 +46,9 @@ ledger --db my.db categorize checking
 ledger --db my.db set-budget Coffee 2024-03 100.00 USD
 ledger --db my.db budget-status Coffee 2024-03
 ledger --db my.db report checking 2024-03
+
+# or browse it in the web dashboard instead
+ledger --db my.db serve
 ```
 
 ## Project layout
@@ -53,7 +59,8 @@ ledger/
 ├── storage/      SQLite schema and repositories
 ├── importers/    CSV statement parsing
 ├── rules/        categorization engine, recurring detection, alerts
-├── reports/      monthly summaries
+├── reports/      monthly summaries, balance, net worth, CSV export
+├── web/          Flask dashboard (templates + static assets)
 └── cli/          command-line entry point
 tests/            unit and end-to-end tests (pytest)
 ```
