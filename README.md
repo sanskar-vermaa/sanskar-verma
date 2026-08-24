@@ -32,7 +32,8 @@ balance forward month to month.
   `set-budget`, `budget-status`, `balance`, `tag`, `report`, `export`.
 - **A web dashboard** — a small Flask app (`ledger serve`) over the same
   database: browse accounts and transactions, manage budgets and
-  categorization rules, and trigger categorization from the browser.
+  categorization rules, and trigger categorization from the browser. Dark,
+  glassmorphic UI with gradient stat cards and a mouse-tracked tilt effect.
 
 ## Quick start
 
@@ -60,7 +61,7 @@ ledger/
 ├── importers/    CSV statement parsing
 ├── rules/        categorization engine, recurring detection, alerts
 ├── reports/      monthly summaries, balance, net worth, CSV export
-├── web/          Flask dashboard (templates + static assets)
+├── web/          Flask dashboard (dark glassmorphic templates + static assets)
 └── cli/          command-line entry point
 tests/            unit and end-to-end tests (pytest)
 ```
