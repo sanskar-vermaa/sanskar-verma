@@ -200,6 +200,14 @@ def _cmd_export(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_serve(args: argparse.Namespace) -> int:
+    from ledger.web.app import create_app
+
+    app = create_app(args.db)
+    app.run(host=args.host, port=args.port, debug=args.debug)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="ledger")
     parser.add_argument("--db", default="ledger.db", help="path to the SQLite database file")
@@ -258,6 +266,12 @@ def build_parser() -> argparse.ArgumentParser:
     p_export.add_argument("account_id")
     p_export.add_argument("--out", help="output file path (defaults to stdout)")
     p_export.set_defaults(func=_cmd_export)
+
+    p_serve = subparsers.add_parser("serve", help="run the web dashboard")
+    p_serve.add_argument("--host", default="127.0.0.1")
+    p_serve.add_argument("--port", type=int, default=5000)
+    p_serve.add_argument("--debug", action="store_true")
+    p_serve.set_defaults(func=_cmd_serve)
 
     return parser
 
