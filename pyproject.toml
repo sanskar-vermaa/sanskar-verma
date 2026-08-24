@@ -6,6 +6,9 @@ authors = [{ name = "Sanskar Verma", email = "sanskarv120503@gmail.com" }]
 requires-python = ">=3.10"
 dependencies = []
 
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
 [project.scripts]
 ledger = "ledger.cli.main:main"
 
