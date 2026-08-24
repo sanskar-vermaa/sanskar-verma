@@ -37,7 +37,7 @@ balance forward month to month.
 pip install -e .
 
 ledger --db my.db init-account checking "Everyday Checking" USD
-ledger --db my.db import checking statement.csv
+ledger --db my.db import checking examples/sample_statement.csv
 ledger --db my.db add-rule "STARBUCKS*" Coffee
 ledger --db my.db categorize checking
 ledger --db my.db set-budget Coffee 2024-03 100.00 USD
