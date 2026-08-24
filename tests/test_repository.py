@@ -97,6 +97,29 @@ def test_set_category(repo):
     assert fetched[0].category == "Groceries"
 
 
+def test_add_tag_appends_without_duplicating(repo):
+    repo.upsert_account(_account())
+    txn = Transaction(
+        account_id="acc1",
+        posted_on=date(2024, 1, 15),
+        amount=Money.from_major("-25.00", "USD"),
+        description="GROCERY STORE",
+        external_id="tx-1",
+    )
+    txn_id = repo.add_transaction(txn)
+    repo.add_tag(txn_id, "personal")
+    repo.add_tag(txn_id, "recurring")
+    repo.add_tag(txn_id, "personal")  # duplicate, should be a no-op
+
+    fetched = repo.list_transactions(account_id="acc1")
+    assert fetched[0].tags == ["personal", "recurring"]
+
+
+def test_add_tag_unknown_transaction_raises(repo):
+    with pytest.raises(ValueError):
+        repo.add_tag(9999, "personal")
+
+
 def test_transaction_without_external_id_is_not_deduplicated(repo):
     repo.upsert_account(_account())
     txn = Transaction(
