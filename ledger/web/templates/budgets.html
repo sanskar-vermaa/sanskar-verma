@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Budgets - Ledger{% endblock %}
+{% block content %}
+  <h1>Budgets</h1>
+  <table>
+    <thead><tr><th>Category</th><th>Period</th><th>Limit</th><th>Spent</th><th>Remaining</th><th>Alert</th></tr></thead>
+    <tbody>
+      {% for status, alert in statuses %}
+      <tr class="{{ 'over' if status.is_over else '' }}">
+        <td>{{ status.budget.category }}</td>
+        <td>{{ status.budget.period }}</td>
+        <td>{{ status.effective_limit }}</td>
+        <td>{{ status.spent }}</td>
+        <td>{{ status.remaining }}</td>
+        <td>{{ alert or "-" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>New budget</h2>
+  <form method="post" action="{{ url_for('new_budget') }}">
+    <input name="category" placeholder="Category" required>
+    <input name="period" placeholder="YYYY-MM" required>
+    <input name="limit" placeholder="Limit (e.g. 200.00)" required>
+    <input name="currency" placeholder="Currency (e.g. USD)" required>
+    <label><input type="checkbox" name="rollover" value="1"> Rollover</label>
+    <button type="submit">Create</button>
+  </form>
+{% endblock %}
