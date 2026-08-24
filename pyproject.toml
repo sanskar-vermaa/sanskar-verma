@@ -1,0 +1,17 @@
+[project]
+name = "ledger"
+version = "0.1.0"
+description = "A personal finance and budgeting toolkit: import statements, auto-categorize transactions, detect recurring charges, and track budgets."
+authors = [{ name = "Sanskar Verma", email = "sanskarv120503@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+ledger = "ledger.cli.main:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
